@@ -3,285 +3,350 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ShiftSync — Login</title>
+  <title>WFM — Workforce Management</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0c0a09;
+      --s1:       #1c1917;
+      --s2:       #231f1d;
+      --border:   #2c2825;
+      --border2:  #3a3330;
+      --text:     #fafaf9;
+      --muted:    #78716c;
+      --muted2:   #a8a29e;
+      --accent:   #f97316;
+      --accent2:  #fb923c;
+      --accentd:  #c2610c;
+      --green:    #4ade80;
+      --red:      #f87171;
+      --yellow:   #fbbf24;
+      --blue:     #38bdf8;
+    }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #0a0b0f;
-      color: #e8eaf0;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      padding: 24px;
     }
 
-    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
-    .logo-icon { width: 40px; height: 40px; background: #5b6ef5; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-    .logo-text  { font-size: 22px; font-weight: 700; }
-    .logo-text span { color: #7b8ff7; }
-
-    .cards {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: center;
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 48px;
     }
+    .logo-mark {
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 800; color: #fff;
+      letter-spacing: -1px;
+      box-shadow: 0 0 24px rgba(249,115,22,.35);
+    }
+    .logo-name  { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+    .logo-tagline { font-size: 12px; color: var(--muted2); margin-top: 2px; }
+
+    .cards { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; max-width: 860px; }
 
     .card {
-      background: #111318;
-      border: 1px solid #1f2333;
-      border-radius: 16px;
-      padding: 32px 28px;
-      width: 260px;
+      background: var(--s1);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 30px 26px;
+      width: 255px;
       cursor: pointer;
       transition: all .2s;
-      text-align: center;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
     }
-    .card:hover { border-color: #5b6ef5; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(91,110,245,.15); }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      opacity: 0; transition: opacity .2s;
+    }
+    .card.orange::before { background: var(--accent); }
+    .card.teal::before   { background: #2dd4bf; }
+    .card.violet::before { background: #a78bfa; }
 
-    .card-icon { font-size: 36px; margin-bottom: 14px; }
-    .card h2   { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .card p    { font-size: 12px; color: #5a6282; line-height: 1.5; margin-bottom: 20px; }
+    .card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 16px 48px rgba(0,0,0,.4); }
+    .card.orange:hover::before { opacity: 1; }
+    .card.teal:hover::before   { opacity: 1; }
+    .card.violet:hover::before { opacity: 1; }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .card.orange .card-icon { background: rgba(249,115,22,.12); }
+    .card.teal   .card-icon { background: rgba(45,212,191,.1); }
+    .card.violet .card-icon { background: rgba(167,139,250,.1); }
+
+    .card-arrow { color: var(--muted); font-size: 18px; transition: color .2s; }
+    .card:hover .card-arrow { color: var(--text); }
+
+    .card h2 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .card p  { font-size: 12px; color: var(--muted2); line-height: 1.6; margin-bottom: 22px; }
+
+    .card-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 9px; border-radius: 20px;
+    }
+    .card.orange .card-badge { background: rgba(249,115,22,.12); color: var(--accent); }
+    .card.teal   .card-badge { background: rgba(45,212,191,.1);  color: #2dd4bf; }
+    .card.violet .card-badge { background: rgba(167,139,250,.1); color: #a78bfa; }
 
     .card-btn {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all .15s;
+      display: block; width: 100%;
+      padding: 10px; border-radius: 8px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted2);
+      font-size: 13px; font-weight: 500;
+      font-family: inherit; cursor: pointer;
+      transition: all .15s; margin-top: 12px;
+      text-align: center;
     }
-    .card-btn.blue   { background: #5b6ef5; color: #fff; }
-    .card-btn.blue:hover { background: #7b8ff7; }
-    .card-btn.green  { background: rgba(34,197,94,.15); color: #22c55e; border: 1px solid rgba(34,197,94,.3); }
-    .card-btn.green:hover { background: rgba(34,197,94,.25); }
-    .card-btn.purple { background: rgba(168,85,247,.15); color: #c084fc; border: 1px solid rgba(168,85,247,.3); }
-    .card-btn.purple:hover { background: rgba(168,85,247,.25); }
+    .card.orange .card-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .card.teal   .card-btn:hover { background: #2dd4bf; border-color: #2dd4bf; color: #0c0a09; }
+    .card.violet .card-btn:hover { background: #a78bfa; border-color: #a78bfa; color: #0c0a09; }
 
     /* Modal */
-    .modal-bg {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,.7);
-      backdrop-filter: blur(4px);
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
+    .overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.75);
+      backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+      z-index: 200;
     }
-    .modal-bg.open { display: flex; }
+    .overlay.open { display: flex; }
 
     .modal {
-      background: #111318;
-      border: 1px solid #1f2333;
+      background: var(--s1);
+      border: 1px solid var(--border2);
       border-radius: 16px;
-      padding: 32px;
-      width: 360px;
+      padding: 32px; width: 380px;
+      box-shadow: 0 32px 80px rgba(0,0,0,.6);
     }
-    .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-    .modal p  { font-size: 12px; color: #5a6282; margin-bottom: 24px; }
+    .modal-header { margin-bottom: 24px; }
+    .modal-header h3 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .modal-header p  { font-size: 12px; color: var(--muted2); }
 
-    .field { margin-bottom: 16px; }
-    .field label { display: block; font-size: 11px; font-weight: 600; color: #5a6282; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 6px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px; }
     .field input, .field select {
       width: 100%;
-      background: #181b22;
-      border: 1px solid #1f2333;
+      background: var(--s2);
+      border: 1px solid var(--border2);
       border-radius: 8px;
-      color: #e8eaf0;
-      padding: 11px 14px;
-      font-size: 14px;
-      font-family: inherit;
-      outline: none;
+      color: var(--text);
+      padding: 10px 13px;
+      font-size: 14px; font-family: inherit;
+      outline: none; transition: border .15s;
     }
-    .field input:focus, .field select:focus { border-color: #5b6ef5; }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+    .field select option { background: var(--s2); }
 
-    .modal-btns { display: flex; gap: 10px; margin-top: 4px; }
-    .btn-submit {
-      flex: 1;
-      background: #5b6ef5;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 11px;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-primary {
+      flex: 1; background: var(--accent); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 11px; font-size: 14px; font-weight: 600;
+      font-family: inherit; cursor: pointer; transition: background .15s;
     }
-    .btn-submit:hover { background: #7b8ff7; }
-    .btn-cancel {
-      background: #181b22;
-      color: #5a6282;
-      border: 1px solid #1f2333;
-      border-radius: 8px;
-      padding: 11px 18px;
-      font-size: 14px;
-      font-family: inherit;
-      cursor: pointer;
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-ghost {
+      background: transparent; color: var(--muted2);
+      border: 1px solid var(--border2);
+      border-radius: 8px; padding: 11px 18px;
+      font-size: 14px; font-family: inherit; cursor: pointer;
     }
-    .btn-cancel:hover { color: #e8eaf0; }
+    .btn-ghost:hover { color: var(--text); }
 
-    .error-msg { color: #ef4444; font-size: 12px; margin-top: 8px; display: none; }
+    .error { color: var(--red); font-size: 12px; margin-top: 10px; display: none; }
 
-    .footer { margin-top: 40px; font-size: 12px; color: #5a6282; }
+    .hint {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--s2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 13px;
+      margin-top: 14px; font-size: 12px; color: var(--muted2);
+    }
+    .hint strong { color: var(--accent2); }
+
+    footer {
+      margin-top: 52px; font-size: 11px; color: var(--muted);
+      display: flex; gap: 20px; align-items: center;
+    }
+    footer span { color: var(--muted2); }
   </style>
 </head>
 <body>
 
 <div class="logo">
-  <div class="logo-icon">⚡</div>
-  <div class="logo-text">Shift<span>Sync</span></div>
+  <div class="logo-mark">W</div>
+  <div>
+    <div class="logo-name">WFM</div>
+    <div class="logo-tagline">Workforce Management Platform</div>
+  </div>
 </div>
 
 <div class="cards">
-
-  <!-- Manager -->
-  <div class="card">
-    <div class="card-icon">🏢</div>
+  <div class="card orange" onclick="open_('manager')">
+    <div class="card-top">
+      <div class="card-icon">📊</div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="card-badge">● Restricted</div>
     <h2>Operations Manager</h2>
-    <p>Live dashboard, agent roster, scheduler logs, idle alerts</p>
-    <button class="card-btn blue" onclick="openModal('manager')">Manager Login</button>
+    <p>Live dashboard, agent roster, shift scheduler, idle alerts and scheduler logs.</p>
+    <button class="card-btn">Manager Login</button>
   </div>
 
-  <!-- Agent -->
-  <div class="card">
-    <div class="card-icon">🎧</div>
+  <div class="card teal" onclick="open_('agent')">
+    <div class="card-top">
+      <div class="card-icon">🎧</div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="card-badge">● Restricted</div>
     <h2>Support Agent</h2>
-    <p>Handle incoming customer chats, go online/offline</p>
-    <button class="card-btn green" onclick="openModal('agent')">Agent Login</button>
+    <p>Receive and handle incoming customer chats. Go online or offline for your shift.</p>
+    <button class="card-btn">Agent Login</button>
   </div>
 
-  <!-- Customer -->
-  <div class="card">
-    <div class="card-icon">💬</div>
+  <div class="card violet" onclick="goCustomer()">
+    <div class="card-top">
+      <div class="card-icon">💬</div>
+      <span class="card-arrow">→</span>
+    </div>
+    <div class="card-badge">● Open</div>
     <h2>Customer Support</h2>
-    <p>Start a live chat with one of our support agents</p>
-    <button class="card-btn purple" onclick="goCustomer()">Start Chat</button>
+    <p>Start a live chat session. You'll be connected with the next available agent.</p>
+    <button class="card-btn">Start Chat</button>
   </div>
-
 </div>
 
-<div class="footer">ShiftSync Workforce Management © 2026</div>
+<footer>
+  <span>WFM Platform v1.0</span> · <span>© 2026 All rights reserved</span>
+</footer>
 
-<!-- Manager Modal -->
-<div class="modal-bg" id="manager-modal">
+<!-- Manager modal -->
+<div class="overlay" id="manager-overlay">
   <div class="modal">
-    <h3>Manager Login</h3>
-    <p>Enter your credentials to access the operations dashboard</p>
+    <div class="modal-header">
+      <h3>Manager Login</h3>
+      <p>Restricted access — operations team only</p>
+    </div>
     <div class="field">
       <label>Username</label>
-      <input type="text" id="mgr-user" placeholder="admin" />
+      <input id="mu" type="text" placeholder="Enter username" autocomplete="off" />
     </div>
     <div class="field">
       <label>Password</label>
-      <input type="password" id="mgr-pass" placeholder="••••••••"
-        onkeydown="if(event.key==='Enter') submitManager()" />
+      <input id="mp" type="password" placeholder="Enter password"
+        onkeydown="if(event.key==='Enter') loginManager()" />
     </div>
-    <div class="error-msg" id="mgr-error">Invalid username or password</div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('manager')">Cancel</button>
-      <button class="btn-submit" onclick="submitManager()">Login →</button>
+    <div class="hint">💡 Demo: <strong>admin</strong> / <strong>admin123</strong></div>
+    <div class="error" id="me">Incorrect username or password. Please try again.</div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="close_('manager')">Cancel</button>
+      <button class="btn-primary" onclick="loginManager()">Login →</button>
     </div>
   </div>
 </div>
 
-<!-- Agent Modal -->
-<div class="modal-bg" id="agent-modal">
+<!-- Agent modal -->
+<div class="overlay" id="agent-overlay">
   <div class="modal">
-    <h3>Agent Login</h3>
-    <p>Select your name to access the agent console</p>
+    <div class="modal-header">
+      <h3>Agent Login</h3>
+      <p>Select your profile and enter your PIN</p>
+    </div>
     <div class="field">
       <label>Your Name</label>
-      <select id="agent-select"><option value="">— Select your agent —</option></select>
+      <select id="asel"><option value="">— Select your agent —</option></select>
     </div>
     <div class="field">
       <label>PIN</label>
-      <input type="password" id="agent-pin" placeholder="Enter PIN (1234)"
-        onkeydown="if(event.key==='Enter') submitAgent()" />
+      <input id="ap" type="password" placeholder="4-digit PIN"
+        onkeydown="if(event.key==='Enter') loginAgent()" />
     </div>
-    <div class="error-msg" id="agent-error">Invalid PIN or agent not selected</div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeModal('agent')">Cancel</button>
-      <button class="btn-submit" onclick="submitAgent()">Login →</button>
+    <div class="hint">💡 Demo PIN for all agents: <strong>1234</strong></div>
+    <div class="error" id="ae">Invalid selection or incorrect PIN.</div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="close_('agent')">Cancel</button>
+      <button class="btn-primary" onclick="loginAgent()">Login →</button>
     </div>
   </div>
 </div>
 
 <script>
-  // Manager credentials
-  const MANAGER_CREDENTIALS = { username: 'admin', password: 'admin123' };
-
-  // All agents share PIN 1234 for demo
-  const AGENT_PIN = '1234';
-
   async function loadAgents() {
     try {
-      const res = await fetch('/agents');
-      const agents = await res.json();
-      const sel = document.getElementById('agent-select');
+      const r = await fetch('/agents');
+      const agents = await r.json();
+      const sel = document.getElementById('asel');
       agents.filter(a => a.status === 'active').forEach(a => {
-        const opt = document.createElement('option');
-        opt.value = a.id;
-        opt.dataset.name = a.name;
-        opt.textContent = `${a.name} — ${a.site}`;
-        sel.appendChild(opt);
+        const o = document.createElement('option');
+        o.value = a.id; o.dataset.name = a.name;
+        o.textContent = `${a.name}  —  ${a.site}`;
+        sel.appendChild(o);
       });
     } catch(e) {}
   }
 
-  function openModal(type) {
-    document.getElementById(`${type}-modal`).classList.add('open');
-    if (type === 'manager') document.getElementById('mgr-user').focus();
-    if (type === 'agent')   document.getElementById('agent-select').focus();
+  function open_(type) {
+    document.getElementById(`${type}-overlay`).classList.add('open');
+    setTimeout(() => document.getElementById(type === 'manager' ? 'mu' : 'asel').focus(), 50);
+  }
+  function close_(type) {
+    document.getElementById(`${type}-overlay`).classList.remove('open');
+    document.getElementById(type === 'manager' ? 'me' : 'ae').style.display = 'none';
   }
 
-  function closeModal(type) {
-    document.getElementById(`${type}-modal`).classList.remove('open');
-    document.getElementById(type === 'manager' ? 'mgr-error' : 'agent-error').style.display = 'none';
-  }
-
-  function submitManager() {
-    const user = document.getElementById('mgr-user').value.trim();
-    const pass = document.getElementById('mgr-pass').value;
-    if (user === MANAGER_CREDENTIALS.username && pass === MANAGER_CREDENTIALS.password) {
+  function loginManager() {
+    const u = document.getElementById('mu').value.trim();
+    const p = document.getElementById('mp').value;
+    if (u === 'admin' && p === 'admin123') {
       sessionStorage.setItem('wfm_role', 'manager');
       sessionStorage.setItem('wfm_name', 'Ops Manager');
-      window.location.href = '/dashboard.html';
+      location.href = '/dashboard.html';
     } else {
-      document.getElementById('mgr-error').style.display = 'block';
+      document.getElementById('me').style.display = 'block';
     }
   }
 
-  function submitAgent() {
-    const sel = document.getElementById('agent-select');
-    const pin = document.getElementById('agent-pin').value;
-    const agentId = sel.value;
-    const agentName = sel.options[sel.selectedIndex]?.dataset?.name;
-    if (!agentId || pin !== AGENT_PIN) {
-      document.getElementById('agent-error').style.display = 'block';
+  function loginAgent() {
+    const sel = document.getElementById('asel');
+    const pin = document.getElementById('ap').value;
+    const id  = sel.value;
+    const name = sel.options[sel.selectedIndex]?.dataset?.name;
+    if (!id || pin !== '1234') {
+      document.getElementById('ae').style.display = 'block';
       return;
     }
-    sessionStorage.setItem('wfm_role', 'agent');
-    sessionStorage.setItem('wfm_agent_id', agentId);
-    sessionStorage.setItem('wfm_name', agentName);
-    window.location.href = '/agent.html';
+    sessionStorage.setItem('wfm_role',     'agent');
+    sessionStorage.setItem('wfm_agent_id', id);
+    sessionStorage.setItem('wfm_name',     name);
+    location.href = '/agent.html';
   }
 
-  function goCustomer() {
-    window.location.href = '/customer.html';
-  }
+  function goCustomer() { location.href = '/customer.html'; }
 
-  // Close modal on background click
-  document.querySelectorAll('.modal-bg').forEach(bg => {
-    bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); });
-  });
+  document.querySelectorAll('.overlay').forEach(o =>
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
+  );
 
   loadAgents();
 </script>

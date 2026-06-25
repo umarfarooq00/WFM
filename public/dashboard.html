@@ -3,470 +3,236 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ShiftSync — Workforce Dashboard</title>
+  <title>WFM — Live Operations</title>
   <script>
-    // Auth guard — only managers can access this page
-    (function() {
-      const role = sessionStorage.getItem('wfm_role');
-      if (role !== 'manager') window.location.replace('/login.html');
-    })();
+    (function(){ if(sessionStorage.getItem('wfm_role')!=='manager') location.replace('/'); })();
   </script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:       #0a0b0f;
-      --surface:  #111318;
-      --surface2: #181b22;
-      --border:   #1f2333;
-      --border2:  #262c3d;
-      --text:     #e8eaf0;
-      --muted:    #5a6282;
-      --accent:   #5b6ef5;
-      --accent2:  #7b8ff7;
-      --green:    #22c55e;
-      --yellow:   #f59e0b;
-      --red:      #ef4444;
-      --cyan:     #06b6d4;
+      --bg:      #0c0a09;
+      --s1:      #1c1917;
+      --s2:      #231f1d;
+      --s3:      #292524;
+      --border:  #2c2825;
+      --border2: #3a3330;
+      --text:    #fafaf9;
+      --muted:   #78716c;
+      --muted2:  #a8a29e;
+      --accent:  #f97316;
+      --accent2: #fb923c;
+      --green:   #4ade80;
+      --red:     #f87171;
+      --yellow:  #fbbf24;
+      --blue:    #38bdf8;
     }
 
-    body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      font-size: 13px;
-    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; font-size: 13px; }
 
     /* ── SIDEBAR ── */
-    .sidebar {
-      width: 220px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      flex-shrink: 0;
-    }
+    .sidebar { width: 228px; background: var(--s1); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
 
-    .logo {
-      padding: 22px 20px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-icon {
-      width: 32px; height: 32px;
-      background: var(--accent);
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-    }
-    .logo-text { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
-    .logo-text span { color: var(--accent2); }
+    .logo { padding: 20px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .logo-mark { width: 34px; height: 34px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: #fff; box-shadow: 0 0 18px rgba(249,115,22,.3); }
+    .logo-text  { font-size: 16px; font-weight: 800; letter-spacing: -.5px; }
+    .logo-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
 
-    .nav { padding: 12px 8px; flex: 1; }
-    .nav-section { margin-bottom: 20px; }
-    .nav-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      padding: 0 12px;
-      margin-bottom: 4px;
-    }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 8px 12px;
-      border-radius: 7px;
-      color: var(--muted);
-      text-decoration: none;
-      font-weight: 500;
-      transition: all .15s;
-      cursor: pointer;
-    }
-    .nav-item:hover { background: var(--surface2); color: var(--text); }
-    .nav-item.active { background: rgba(91,110,245,.15); color: var(--accent2); }
-    .nav-item .icon { width: 16px; text-align: center; font-size: 14px; }
-    .nav-item .badge {
-      margin-left: auto;
-      background: var(--red);
-      color: #fff;
-      border-radius: 10px;
-      font-size: 10px;
-      padding: 1px 6px;
-      font-weight: 600;
-    }
+    .nav { padding: 10px 8px; flex: 1; overflow-y: auto; }
+    .nav-section { margin-bottom: 22px; }
+    .nav-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 0 10px; margin-bottom: 3px; }
+    .nav-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; color: var(--muted2); text-decoration: none; font-weight: 500; font-size: 13px; transition: all .12s; cursor: pointer; }
+    .nav-item:hover  { background: var(--s2); color: var(--text); }
+    .nav-item.active { background: rgba(249,115,22,.12); color: var(--accent2); }
+    .nav-item .ico   { width: 16px; text-align: center; font-size: 13px; flex-shrink: 0; }
+    .nav-item.danger { color: var(--red); }
+    .nav-item.danger:hover { background: rgba(248,113,113,.08); }
 
-    .sidebar-footer {
-      padding: 14px 16px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .avatar-sm {
-      width: 30px; height: 30px;
-      background: linear-gradient(135deg, var(--accent), var(--cyan));
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 700;
-      flex-shrink: 0;
-    }
-    .sidebar-footer .name  { font-size: 12px; font-weight: 600; }
-    .sidebar-footer .role  { font-size: 11px; color: var(--muted); }
+    .sidebar-footer { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .ava { width: 30px; height: 30px; background: linear-gradient(135deg, var(--accent), #fbbf24); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #0c0a09; flex-shrink: 0; }
+    .sf-name { font-size: 12px; font-weight: 600; }
+    .sf-role { font-size: 11px; color: var(--muted); }
 
     /* ── MAIN ── */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-    .topbar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .topbar h1 { font-size: 15px; font-weight: 600; }
-    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .topbar { background: var(--s1); border-bottom: 1px solid var(--border); height: 50px; padding: 0 22px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .topbar h1 { font-size: 14px; font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 8px; }
 
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 7px;
-      font-size: 12px;
-      font-weight: 500;
-      border: none;
-      cursor: pointer;
-      transition: all .15s;
-      font-family: inherit;
-    }
-    .btn-primary { background: var(--accent); color: #fff; }
-    .btn-primary:hover { background: var(--accent2); }
-    .btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); }
-    .btn-ghost:hover { color: var(--text); }
+    .pill-live { display: inline-flex; align-items: center; gap: 5px; background: rgba(74,222,128,.1); color: var(--green); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+    .pill-live span { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
 
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .pill.live { background: rgba(34,197,94,.12); color: var(--green); }
+    .btn { display: inline-flex; align-items: center; gap: 5px; padding: 6px 13px; border-radius: 7px; font-size: 12px; font-weight: 500; border: none; cursor: pointer; font-family: inherit; transition: all .12s; }
+    .btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--muted2); }
+    .btn-outline:hover { color: var(--text); border-color: var(--muted); }
+    .btn-accent  { background: var(--accent); color: #fff; }
+    .btn-accent:hover { background: var(--accent2); }
 
-    .content { flex: 1; overflow-y: auto; padding: 24px; }
+    .content { flex: 1; overflow-y: auto; padding: 20px 22px; }
 
     /* ── STATS ── */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
-    }
+    .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
+    .stat { background: var(--s1); border: 1px solid var(--border); border-radius: 11px; padding: 16px; position: relative; overflow: hidden; }
+    .stat::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; }
+    .stat.g::after { background: var(--green); }
+    .stat.y::after { background: var(--yellow); }
+    .stat.r::after { background: var(--red); }
+    .stat.b::after { background: var(--blue); }
+    .stat.o::after { background: var(--accent); }
+    .stat-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+    .stat-val   { font-size: 30px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .stat-sub   { font-size: 11px; color: var(--muted); }
+    .stat.g .stat-val { color: var(--green); }
+    .stat.y .stat-val { color: var(--yellow); }
+    .stat.r .stat-val { color: var(--red); }
+    .stat.b .stat-val { color: var(--blue); }
+    .stat.o .stat-val { color: var(--accent2); }
 
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px;
-    }
-    .stat-card .s-label { font-size: 11px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
-    .stat-card .s-value { font-size: 32px; font-weight: 700; margin: 8px 0 4px; line-height: 1; }
-    .stat-card .s-sub   { font-size: 11px; color: var(--muted); }
-    .stat-card.green .s-value { color: var(--green); }
-    .stat-card.yellow .s-value { color: var(--yellow); }
-    .stat-card.red    .s-value { color: var(--red); }
-    .stat-card.blue   .s-value { color: var(--cyan); }
-    .stat-card.purple .s-value { color: var(--accent2); }
-
-    /* ── TABLE SECTION ── */
-    .section {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .section-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .section-header h2 { font-size: 13px; font-weight: 600; }
-
-    .filters { display: flex; gap: 8px; align-items: center; }
-
+    /* ── SIM PANEL ── */
+    .sim-wrap { background: var(--s1); border: 1px solid var(--border); border-radius: 11px; padding: 16px 18px; margin-bottom: 18px; }
+    .sim-wrap h3 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 14px; }
+    .sim-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+    .sf { display: flex; flex-direction: column; gap: 5px; }
+    .sf label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
     select, input[type=text] {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: 7px;
-      color: var(--text);
-      padding: 6px 10px;
-      font-size: 12px;
-      font-family: inherit;
-      outline: none;
+      background: var(--s2); border: 1px solid var(--border2);
+      border-radius: 7px; color: var(--text);
+      padding: 6px 10px; font-size: 12px; font-family: inherit; outline: none;
     }
     select:focus, input[type=text]:focus { border-color: var(--accent); }
+    #sim-log { margin-top: 10px; font-size: 11px; color: var(--muted); font-family: monospace; max-height: 54px; overflow-y: auto; }
+
+    /* ── TABLE ── */
+    .table-wrap { background: var(--s1); border: 1px solid var(--border); border-radius: 11px; overflow: hidden; }
+    .table-head { padding: 14px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .table-head h2 { font-size: 13px; font-weight: 600; }
+    .filters { display: flex; gap: 8px; }
 
     table { width: 100%; border-collapse: collapse; }
-
-    thead th {
-      background: var(--bg);
-      color: var(--muted);
-      font-weight: 500;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      text-align: left;
-      padding: 10px 20px;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-      cursor: pointer;
-      user-select: none;
-    }
-    thead th:hover { color: var(--text); }
-
+    thead th { background: var(--bg); color: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; text-align: left; padding: 10px 18px; border-bottom: 1px solid var(--border); white-space: nowrap; cursor: pointer; user-select: none; }
+    thead th:hover { color: var(--muted2); }
     tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: var(--surface2); }
-    td { padding: 13px 20px; vertical-align: middle; }
+    tbody tr:last-child { border: none; }
+    tbody tr:hover { background: var(--s2); }
+    td { padding: 12px 18px; vertical-align: middle; }
 
-    .agent-cell { display: flex; align-items: center; gap: 10px; }
-    .avatar {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700;
-      flex-shrink: 0;
-    }
-    .agent-cell .a-name { font-size: 13px; font-weight: 500; }
-    .agent-cell .a-id   { font-size: 11px; color: var(--muted); }
+    .agent-row { display: flex; align-items: center; gap: 10px; }
+    .agent-ava { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+    .a-name { font-size: 13px; font-weight: 500; }
+    .a-id   { font-size: 11px; color: var(--muted); }
 
-    .state-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .state-badge .dot { width: 6px; height: 6px; border-radius: 50%; }
-    .state-badge.online  { background: rgba(34,197,94,.1);  color: var(--green); }
-    .state-badge.online .dot  { background: var(--green); box-shadow: 0 0 6px var(--green); }
-    .state-badge.away    { background: rgba(245,158,11,.1);  color: var(--yellow); }
-    .state-badge.away .dot    { background: var(--yellow); }
-    .state-badge.offline { background: rgba(90,98,130,.1);  color: var(--muted); }
-    .state-badge.offline .dot { background: var(--muted); }
+    .status-dot { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .status-dot .d { width: 6px; height: 6px; border-radius: 50%; }
+    .status-dot.online  { background: rgba(74,222,128,.1);  color: var(--green); }
+    .status-dot.online .d  { background: var(--green); box-shadow: 0 0 5px var(--green); }
+    .status-dot.away    { background: rgba(251,191,36,.1);  color: var(--yellow); }
+    .status-dot.away .d    { background: var(--yellow); }
+    .status-dot.offline { background: rgba(120,113,108,.1); color: var(--muted); }
+    .status-dot.offline .d { background: var(--muted); }
 
-    .site-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 500;
-      background: var(--surface2);
-      color: var(--muted);
-      border: 1px solid var(--border2);
-    }
-
-    .alert-tag {
-      display: inline-flex; align-items: center; gap: 4px;
-      background: rgba(239,68,68,.1);
-      color: var(--red);
-      border-radius: 5px;
-      padding: 2px 7px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
+    .site-tag { display: inline-block; background: var(--s3); border: 1px solid var(--border2); border-radius: 5px; padding: 2px 7px; font-size: 11px; color: var(--muted2); }
+    .idle-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(248,113,113,.1); color: var(--red); border-radius: 5px; padding: 2px 7px; font-size: 11px; font-weight: 600; }
     .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
-    .suspended td { opacity: .4; }
+    .susp td { opacity: .35; }
+    .empty-td { text-align: center; padding: 48px; color: var(--muted); }
 
-    .empty-row td { text-align: center; padding: 48px; color: var(--muted); }
-
-    /* sim panel */
-    .sim-panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 18px 20px;
-      margin-bottom: 20px;
-    }
-    .sim-panel h3 { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
-    .sim-row { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
-    .sim-row .f { display: flex; flex-direction: column; gap: 5px; }
-    .sim-row .f label { font-size: 11px; color: var(--muted); }
-    #sim-log { margin-top: 10px; font-family: monospace; font-size: 11px; color: var(--muted); max-height: 60px; overflow-y: auto; }
-
-    /* scrollbar */
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="logo">
-    <div class="logo-icon">⚡</div>
-    <div class="logo-text">Shift<span>Sync</span></div>
+    <div class="logo-mark">W</div>
+    <div>
+      <div class="logo-text">WFM</div>
+      <div class="logo-sub">Workforce Management</div>
+    </div>
   </div>
 
   <nav class="nav">
     <div class="nav-section">
       <div class="nav-label">Operations</div>
-      <a class="nav-item active" href="/dashboard.html">
-        <span class="icon">▦</span> Dashboard
-      </a>
-      <a class="nav-item" href="/customer.html">
-        <span class="icon">💬</span> Customer Chat
-      </a>
+      <a class="nav-item active" href="/dashboard.html"><span class="ico">▦</span> Dashboard</a>
+      <a class="nav-item" href="/customer.html"><span class="ico">💬</span> Customer Chat</a>
     </div>
     <div class="nav-section">
-      <div class="nav-label">System</div>
-      <a class="nav-item" href="#" onclick="showSchedulerLog()">
-        <span class="icon">🕐</span> Scheduler Log
-        <span class="badge" id="err-badge" style="display:none">!</span>
-      </a>
-      <a class="nav-item" href="#" onclick="logout()" style="color:#ef4444">
-        <span class="icon">⎋</span> Logout
-      </a>
+      <div class="nav-label">Tools</div>
+      <a class="nav-item" onclick="toggleSim()"><span class="ico">⚙</span> Simulate Events</a>
+      <a class="nav-item" onclick="loadSchedLog()"><span class="ico">🕐</span> Scheduler Log</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Account</div>
+      <a class="nav-item danger" onclick="logout()"><span class="ico">⎋</span> Logout</a>
     </div>
   </nav>
 
   <div class="sidebar-footer">
-    <div class="avatar-sm">OP</div>
+    <div class="ava">OP</div>
     <div>
-      <div class="name">Ops Manager</div>
-      <div class="role">Administrator</div>
+      <div class="sf-name">Ops Manager</div>
+      <div class="sf-role">Administrator</div>
     </div>
   </div>
 </aside>
 
-<!-- MAIN -->
 <div class="main">
   <div class="topbar">
     <h1>Live Operations</h1>
     <div class="topbar-right">
-      <span class="pill live">● Live</span>
-      <span id="last-updated" style="color:var(--muted);font-size:11px">—</span>
-      <button class="btn btn-ghost" onclick="toggleSim()">⚙ Simulate</button>
-      <button class="btn btn-primary" onclick="refresh()">↺ Refresh</button>
+      <div class="pill-live"><span></span> Live</div>
+      <span id="ts" style="font-size:11px;color:var(--muted)">—</span>
+      <button class="btn btn-accent" onclick="refresh()">↺ Refresh</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card green">
-        <div class="s-label">Online</div>
-        <div class="s-value" id="stat-online">—</div>
-        <div class="s-sub">agents active</div>
-      </div>
-      <div class="stat-card yellow">
-        <div class="s-label">Away</div>
-        <div class="s-value" id="stat-away">—</div>
-        <div class="s-sub">on break</div>
-      </div>
-      <div class="stat-card">
-        <div class="s-label">Offline</div>
-        <div class="s-value" id="stat-offline" style="color:var(--muted)">—</div>
-        <div class="s-sub">not working</div>
-      </div>
-      <div class="stat-card red">
-        <div class="s-label">Idle Alerts</div>
-        <div class="s-value" id="stat-alerts">—</div>
-        <div class="s-sub">&gt;10 min idle</div>
-      </div>
-      <div class="stat-card blue">
-        <div class="s-label">Total Agents</div>
-        <div class="s-value" id="stat-total">—</div>
-        <div class="s-sub">in system</div>
-      </div>
+    <div class="stats">
+      <div class="stat g"><div class="stat-label">Online</div><div class="stat-val" id="s-on">—</div><div class="stat-sub">agents active</div></div>
+      <div class="stat y"><div class="stat-label">Away</div><div class="stat-val" id="s-aw">—</div><div class="stat-sub">on break</div></div>
+      <div class="stat b"><div class="stat-label">Offline</div><div class="stat-val" id="s-of">—</div><div class="stat-sub">not working</div></div>
+      <div class="stat r"><div class="stat-label">Idle Alerts</div><div class="stat-val" id="s-al">—</div><div class="stat-sub">&gt;10 min idle</div></div>
+      <div class="stat o"><div class="stat-label">Total Agents</div><div class="stat-val" id="s-tt">—</div><div class="stat-sub">in roster</div></div>
     </div>
 
-    <!-- Sim panel -->
-    <div class="sim-panel" id="sim-panel" style="display:none">
+    <div class="sim-wrap" id="sim-panel" style="display:none">
       <h3>Simulate ChatApp Events</h3>
       <div class="sim-row">
-        <div class="f"><label>Agent</label><select id="sim-agent"></select></div>
-        <div class="f"><label>State</label>
-          <select id="sim-state">
-            <option value="online">online</option>
-            <option value="away">away</option>
-            <option value="offline">offline</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" onclick="sendPresence()">Send Presence</button>
-        <button class="btn btn-ghost" onclick="sendMessage()">Message Handled</button>
-        <button class="btn btn-ghost" onclick="sendNextAssignment()">Next Assignment</button>
+        <div class="sf"><label>Agent</label><select id="sim-ag"></select></div>
+        <div class="sf"><label>State</label><select id="sim-st"><option value="online">online</option><option value="away">away</option><option value="offline">offline</option></select></div>
+        <button class="btn btn-accent" onclick="simPresence()">Send Presence</button>
+        <button class="btn btn-outline" onclick="simMsg()">Message Handled</button>
+        <button class="btn btn-outline" onclick="simAssign()">Next Assignment</button>
       </div>
       <div id="sim-log"></div>
     </div>
 
-    <!-- Table -->
-    <div class="section">
-      <div class="section-header">
+    <div class="table-wrap">
+      <div class="table-head">
         <h2>Agent Roster</h2>
         <div class="filters">
-          <select id="filter-site">
-            <option value="">All Sites</option>
-            <option value="manila">Manila</option>
-            <option value="cebu">Cebu</option>
-            <option value="morocco">Morocco</option>
-            <option value="madagascar">Madagascar</option>
-          </select>
-          <select id="filter-state">
-            <option value="">All States</option>
-            <option value="online">Online</option>
-            <option value="away">Away</option>
-            <option value="offline">Offline</option>
-          </select>
-          <input type="text" id="filter-name" placeholder="Search agent…" style="width:160px" />
+          <select id="f-site"><option value="">All Sites</option><option value="manila">Manila</option><option value="cebu">Cebu</option><option value="morocco">Morocco</option><option value="madagascar">Madagascar</option></select>
+          <select id="f-state"><option value="">All States</option><option value="online">Online</option><option value="away">Away</option><option value="offline">Offline</option></select>
+          <input type="text" id="f-name" placeholder="Search name…" style="width:150px" />
         </div>
       </div>
-
       <table>
-        <thead>
-          <tr>
-            <th onclick="sort('name')">Agent</th>
-            <th onclick="sort('site')">Site</th>
-            <th>Shift (UTC)</th>
-            <th onclick="sort('state')">State</th>
-            <th>Online For</th>
-            <th onclick="sort('msgs')">Msgs / hr</th>
-            <th>Idle</th>
-            <th>Pay Rate</th>
-          </tr>
-        </thead>
-        <tbody id="agents-tbody">
-          <tr><td colspan="8" class="empty-row">Loading…</td></tr>
-        </tbody>
+        <thead><tr>
+          <th onclick="sort('name')">Agent</th>
+          <th onclick="sort('site')">Site</th>
+          <th>Shift (UTC)</th>
+          <th onclick="sort('state')">State</th>
+          <th>Online For</th>
+          <th onclick="sort('msgs')">Msgs / hr</th>
+          <th>Idle</th>
+          <th>Pay Rate</th>
+        </tr></thead>
+        <tbody id="tbody"><tr><td colspan="8" class="empty-td">Loading…</td></tr></tbody>
       </table>
     </div>
 
@@ -474,136 +240,79 @@
 </div>
 
 <script>
-  const AVATARS_BG = ['#5b6ef5','#06b6d4','#22c55e','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6'];
-  let allData = [], sortKey = 'state', sortDir = 1, simVisible = false;
+  const PALETTE = ['#f97316','#06b6d4','#8b5cf6','#ec4899','#22c55e','#f59e0b','#ef4444','#14b8a6'];
+  let data=[], sk='state', sd=1, simOpen=false;
 
-  function avatarColor(name) {
-    let h = 0; for (let c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffffffff;
-    return AVATARS_BG[Math.abs(h) % AVATARS_BG.length];
-  }
-  function initials(name) { return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+  function hue(n){ let h=0; for(let c of n) h=(h*31+c.charCodeAt(0))&0xffffffff; return PALETTE[Math.abs(h)%PALETTE.length]; }
+  function ini(n){ return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
+  function dur(s){ if(s===null) return '<span style="color:var(--muted)">—</span>'; const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60; return h>0?`${h}h ${m}m`:m>0?`${m}m ${sec}s`:`${sec}s`; }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
 
-  function toggleSim() {
-    simVisible = !simVisible;
-    document.getElementById('sim-panel').style.display = simVisible ? 'block' : 'none';
-  }
-  function sort(k) { if(sortKey===k) sortDir*=-1; else{sortKey=k;sortDir=1;} render(); }
+  function toggleSim(){ simOpen=!simOpen; document.getElementById('sim-panel').style.display=simOpen?'block':'none'; }
+  function sort(k){ if(sk===k) sd*=-1; else{sk=k;sd=1;} render(); }
 
-  function fmtDur(s) {
-    if (s===null) return '<span style="color:var(--muted)">—</span>';
-    const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
-    if (h>0) return `${h}h ${m}m`;
-    if (m>0) return `${m}m ${sec}s`;
-    return `${sec}s`;
-  }
-
-  function render() {
-    const site  = document.getElementById('filter-site').value;
-    const state = document.getElementById('filter-state').value;
-    const name  = document.getElementById('filter-name').value.toLowerCase();
-
-    let rows = allData.filter(d =>
-      (!site  || d.agent.site === site) &&
-      (!state || d.presence.state === state) &&
-      (!name  || d.agent.name.toLowerCase().includes(name))
-    );
-
-    rows.sort((a,b) => {
-      let av, bv;
-      if (sortKey==='name')  { av=a.agent.name; bv=b.agent.name; }
-      else if (sortKey==='site')  { av=a.agent.site; bv=b.agent.site; }
-      else if (sortKey==='state') { const o={online:0,away:1,offline:2}; av=o[a.presence.state]??3; bv=o[b.presence.state]??3; }
-      else if (sortKey==='msgs')  { av=a.metrics.messagesPerHour; bv=b.metrics.messagesPerHour; }
-      return av<bv ? -sortDir : av>bv ? sortDir : 0;
+  function render(){
+    const site=document.getElementById('f-site').value;
+    const state=document.getElementById('f-state').value;
+    const name=document.getElementById('f-name').value.toLowerCase();
+    let rows=data.filter(d=>(!site||d.agent.site===site)&&(!state||d.presence.state===state)&&(!name||d.agent.name.toLowerCase().includes(name)));
+    rows.sort((a,b)=>{
+      let av,bv;
+      if(sk==='name'){av=a.agent.name;bv=b.agent.name;}
+      else if(sk==='site'){av=a.agent.site;bv=b.agent.site;}
+      else if(sk==='state'){const o={online:0,away:1,offline:2};av=o[a.presence.state]??3;bv=o[b.presence.state]??3;}
+      else if(sk==='msgs'){av=a.metrics.messagesPerHour;bv=b.metrics.messagesPerHour;}
+      return av<bv?-sd:av>bv?sd:0;
     });
-
-    const tbody = document.getElementById('agents-tbody');
-    if (!rows.length) { tbody.innerHTML='<tr><td colspan="8" class="empty-row">No agents match filters.</td></tr>'; return; }
-
-    tbody.innerHTML = rows.map(d => {
-      const {agent, presence, metrics} = d;
-      const susp = agent.status === 'suspended';
-      const idleStr = metrics.idleMinutes !== null ? `${metrics.idleMinutes}m` : '<span style="color:var(--muted)">—</span>';
-      const alertHtml = metrics.idleAlert ? '<span class="alert-tag">⚠ IDLE</span>' : '';
-      const bg = avatarColor(agent.name);
-      return `<tr class="${susp?'suspended':''}">
-        <td>
-          <div class="agent-cell">
-            <div class="avatar" style="background:${bg}">${initials(agent.name)}</div>
-            <div><div class="a-name">${agent.name}</div><div class="a-id">${agent.id}</div></div>
-          </div>
-        </td>
-        <td><span class="site-badge">${agent.site}</span></td>
-        <td><span class="mono">${agent.shift}</span></td>
-        <td><span class="state-badge ${presence.state}"><span class="dot"></span>${presence.state}</span></td>
-        <td>${fmtDur(presence.onlineDurationSeconds)}</td>
-        <td><strong>${metrics.messagesPerHour}</strong></td>
-        <td>${idleStr} ${alertHtml}</td>
-        <td class="mono">$${agent.payRate.toFixed(2)}/hr</td>
+    const tb=document.getElementById('tbody');
+    if(!rows.length){tb.innerHTML='<tr><td colspan="8" class="empty-td">No agents match.</td></tr>';return;}
+    tb.innerHTML=rows.map(d=>{
+      const {agent:ag,presence:p,metrics:m}=d;
+      const susp=ag.status==='suspended';
+      const idle=m.idleMinutes!==null?`${m.idleMinutes}m`:'<span style="color:var(--muted)">—</span>';
+      const alert=m.idleAlert?'<span class="idle-tag">⚠ IDLE</span>':'';
+      const c=hue(ag.name);
+      return `<tr class="${susp?'susp':''}">
+        <td><div class="agent-row"><div class="agent-ava" style="background:${c}20;color:${c}">${ini(ag.name)}</div><div><div class="a-name">${esc(ag.name)}</div><div class="a-id">${ag.id}</div></div></div></td>
+        <td><span class="site-tag">${ag.site}</span></td>
+        <td><span class="mono">${ag.shift}</span></td>
+        <td><span class="status-dot ${p.state}"><span class="d"></span>${p.state}</span></td>
+        <td>${dur(p.onlineDurationSeconds)}</td>
+        <td><strong>${m.messagesPerHour}</strong></td>
+        <td>${idle} ${alert}</td>
+        <td class="mono" style="color:var(--muted2)">$${ag.payRate.toFixed(2)}/hr</td>
       </tr>`;
     }).join('');
   }
 
-  async function refresh() {
-    const res = await fetch('/dashboard');
-    allData = await res.json();
-    const online=allData.filter(d=>d.presence.state==='online').length;
-    const away=allData.filter(d=>d.presence.state==='away').length;
-    document.getElementById('stat-online').textContent=online;
-    document.getElementById('stat-away').textContent=away;
-    document.getElementById('stat-offline').textContent=allData.filter(d=>d.presence.state==='offline').length;
-    document.getElementById('stat-alerts').textContent=allData.filter(d=>d.metrics.idleAlert).length;
-    document.getElementById('stat-total').textContent=allData.length;
-    document.getElementById('last-updated').textContent='Updated '+new Date().toLocaleTimeString();
-
-    const sel=document.getElementById('sim-agent');
-    const prev=sel.value;
-    sel.innerHTML=allData.map(d=>`<option value="${d.agent.id}">${d.agent.name}</option>`).join('');
-    if(prev) sel.value=prev;
-    render();
+  async function refresh(){
+    try{
+      const r=await fetch('/dashboard');
+      data=await r.json();
+      document.getElementById('s-on').textContent=data.filter(d=>d.presence.state==='online').length;
+      document.getElementById('s-aw').textContent=data.filter(d=>d.presence.state==='away').length;
+      document.getElementById('s-of').textContent=data.filter(d=>d.presence.state==='offline').length;
+      document.getElementById('s-al').textContent=data.filter(d=>d.metrics.idleAlert).length;
+      document.getElementById('s-tt').textContent=data.length;
+      document.getElementById('ts').textContent='Updated '+new Date().toLocaleTimeString();
+      const sel=document.getElementById('sim-ag');
+      const prev=sel.value;
+      sel.innerHTML=data.map(d=>`<option value="${d.agent.id}">${esc(d.agent.name)}</option>`).join('');
+      if(prev) sel.value=prev;
+      render();
+    }catch(e){console.error(e);}
   }
 
-  function simLog(msg){
-    const el=document.getElementById('sim-log');
-    el.innerHTML=`<div>› ${new Date().toLocaleTimeString()} ${msg}</div>`+el.innerHTML;
-  }
+  function slog(m){ const el=document.getElementById('sim-log'); el.innerHTML=`<div>› ${new Date().toLocaleTimeString()} ${m}</div>`+el.innerHTML; }
+  async function simPresence(){ const id=document.getElementById('sim-ag').value,st=document.getElementById('sim-st').value; const r=await fetch('/webhooks/presence',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agentId:id,state:st,timestamp:new Date().toISOString()})}); slog(`${id} → ${st}: ${JSON.stringify(await r.json())}`); refresh(); }
+  async function simMsg(){ const id=document.getElementById('sim-ag').value; const r=await fetch('/webhooks/message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agentId:id,timestamp:new Date().toISOString()})}); slog(`msg → ${id}: ${JSON.stringify(await r.json())}`); refresh(); }
+  async function simAssign(){ const r=await fetch('/assignment/next',{method:'POST'}); slog(`assignment: ${JSON.stringify(await r.json())}`); }
+  async function loadSchedLog(){ const r=await fetch('/scheduler/log'); const d=await r.json(); slog(`scheduler (${d.length} entries): ${JSON.stringify(d.slice(-2))}`); document.getElementById('sim-panel').style.display='block'; simOpen=true; }
+  function logout(){ sessionStorage.clear(); location.href='/'; }
 
-  async function sendPresence(){
-    const agentId=document.getElementById('sim-agent').value;
-    const state=document.getElementById('sim-state').value;
-    const r=await fetch('/webhooks/presence',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agentId,state,timestamp:new Date().toISOString()})});
-    simLog(`presence ${agentId} → ${state}: ${JSON.stringify(await r.json())}`);
-    refresh();
-  }
-  async function sendMessage(){
-    const agentId=document.getElementById('sim-agent').value;
-    const r=await fetch('/webhooks/message',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({agentId,timestamp:new Date().toISOString()})});
-    simLog(`message → ${agentId}: ${JSON.stringify(await r.json())}`);
-    refresh();
-  }
-  async function sendNextAssignment(){
-    const r=await fetch('/assignment/next',{method:'POST'});
-    simLog(`assignment: ${JSON.stringify(await r.json())}`);
-  }
-  async function showSchedulerLog(){
-    const r=await fetch('/scheduler/log');
-    const data=await r.json();
-    simLog(`scheduler log (last ${data.length}): ${JSON.stringify(data.slice(-3))}`);
-    document.getElementById('sim-panel').style.display='block';
-    simVisible=true;
-  }
-
-  ['filter-site','filter-state','filter-name'].forEach(id=>
-    document.getElementById(id).addEventListener('input',render)
-  );
-
-  function logout() {
-    sessionStorage.clear();
-    window.location.href = '/login.html';
-  }
-
+  ['f-site','f-state','f-name'].forEach(id=>document.getElementById(id).addEventListener('input',render));
   refresh();
-  setInterval(refresh, 5000);
+  setInterval(refresh,5000);
 </script>
 </body>
 </html>
