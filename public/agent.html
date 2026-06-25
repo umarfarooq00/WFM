@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ShiftSync — Agent Console</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0b0f;
+      --surface:  #111318;
+      --surface2: #181b22;
+      --border:   #1f2333;
+      --border2:  #262c3d;
+      --text:     #e8eaf0;
+      --muted:    #5a6282;
+      --accent:   #5b6ef5;
+      --accent2:  #7b8ff7;
+      --green:    #22c55e;
+      --yellow:   #f59e0b;
+      --red:      #ef4444;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      font-size: 13px;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+    }
+    .logo {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .logo-text  { font-size: 15px; font-weight: 700; letter-spacing: -.3px; }
+    .logo-text span { color: var(--accent2); }
+
+    .nav { padding: 12px 8px; flex: 1; }
+    .nav-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; padding: 0 12px; margin-bottom: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border-radius: 7px; color: var(--muted); text-decoration: none; font-weight: 500; transition: all .15s; }
+    .nav-item:hover { background: var(--surface2); color: var(--text); }
+    .nav-item.active { background: rgba(91,110,245,.15); color: var(--accent2); }
+    .nav-item .icon { width: 16px; text-align: center; font-size: 14px; }
+
+    .agent-status-card {
+      margin: 12px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .agent-status-card label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 6px; }
+    .agent-status-card select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 7px 10px;
+      font-size: 12px;
+      font-family: inherit;
+      outline: none;
+      margin-bottom: 10px;
+    }
+    .status-row { display: flex; gap: 6px; }
+    .btn-online  { flex: 1; background: rgba(34,197,94,.15); color: var(--green); border: 1px solid rgba(34,197,94,.3); border-radius: 6px; padding: 7px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-online:hover { background: rgba(34,197,94,.25); }
+    .btn-offline { flex: 1; background: var(--surface); color: var(--muted); border: 1px solid var(--border2); border-radius: 6px; padding: 7px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .btn-offline:hover { color: var(--text); }
+    .current-status { margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .current-status .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); margin-right: 5px; }
+    .current-status.is-online .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    .current-status.is-online { color: var(--green); }
+
+    .sidebar-footer { padding: 14px 16px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .avatar-sm { width: 30px; height: 30px; background: linear-gradient(135deg,var(--accent),#06b6d4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .sidebar-footer .name { font-size: 12px; font-weight: 600; }
+    .sidebar-footer .role { font-size: 11px; color: var(--muted); }
+
+    /* MAIN */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 24px; height: 52px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    .topbar h1 { font-size: 15px; font-weight: 600; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .badge-count { background: var(--accent); color: #fff; border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
+
+    /* CHAT LAYOUT */
+    .chat-layout { flex: 1; display: flex; overflow: hidden; }
+
+    /* Sessions list */
+    .sessions-col { width: 280px; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: var(--surface); flex-shrink: 0; }
+    .sessions-col h2 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; padding: 14px 16px 10px; border-bottom: 1px solid var(--border); }
+    .session-list { flex: 1; overflow-y: auto; }
+
+    .session-item { padding: 14px 16px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background .1s; position: relative; }
+    .session-item:hover { background: var(--surface2); }
+    .session-item.active { background: rgba(91,110,245,.08); border-left: 2px solid var(--accent); }
+    .session-item .s-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+    .session-item .s-name { font-size: 13px; font-weight: 600; }
+    .session-item .s-time { font-size: 11px; color: var(--muted); }
+    .session-item .s-preview { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .session-item .unread { position: absolute; top: 14px; right: 16px; background: var(--accent); color: #fff; border-radius: 10px; font-size: 10px; padding: 1px 6px; font-weight: 600; }
+
+    .no-sessions { padding: 32px 16px; text-align: center; color: var(--muted); line-height: 1.6; }
+
+    /* Chat area */
+    .chat-col { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+
+    .chat-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .chat-header .customer-info { display: flex; align-items: center; gap: 10px; }
+    .chat-header .cname { font-size: 14px; font-weight: 600; }
+    .chat-header .cmeta { font-size: 11px; color: var(--muted); }
+    .chat-header .avatar { width: 36px; height: 36px; border-radius: 50%; background: #5b6ef5; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+
+    .btn-end { background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.2); border-radius: 7px; padding: 6px 14px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: inherit; }
+    .btn-end:hover { background: rgba(239,68,68,.2); }
+
+    .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+
+    .msg-group { display: flex; flex-direction: column; }
+    .msg-group.agent { align-items: flex-end; }
+    .msg-group.customer { align-items: flex-start; }
+    .msg-group.system { align-items: center; }
+
+    .bubble { padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.5; max-width: 65%; }
+    .msg-group.agent   .bubble { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+    .msg-group.customer .bubble { background: var(--surface); color: var(--text); border: 1px solid var(--border2); border-bottom-left-radius: 4px; }
+    .msg-group.system .bubble { background: var(--surface2); color: var(--muted); font-size: 11px; border-radius: 8px; text-align: center; }
+
+    .msg-meta { font-size: 11px; color: var(--muted); margin-top: 4px; padding: 0 4px; }
+
+    .input-area { padding: 14px 20px; border-top: 1px solid var(--border); background: var(--surface); display: flex; gap: 10px; align-items: flex-end; }
+    .input-area textarea { flex: 1; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); padding: 10px 14px; font-size: 13px; font-family: inherit; outline: none; resize: none; height: 42px; max-height: 120px; overflow-y: auto; line-height: 1.4; }
+    .input-area textarea:focus { border-color: var(--accent); }
+    .send-btn { background: var(--accent); border: none; border-radius: 10px; width: 42px; height: 42px; color: #fff; font-size: 16px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .send-btn:hover { background: var(--accent2); }
+    .send-btn:disabled { background: var(--border2); cursor: not-allowed; }
+
+    .empty-chat { flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; color: var(--muted); }
+    .empty-chat .icon { font-size: 40px; opacity: .3; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div class="logo-text">Shift<span>Sync</span></div>
+  </div>
+
+  <div class="agent-status-card">
+    <label>Your Agent Profile</label>
+    <select id="agent-select"><option value="">— Select agent —</option></select>
+    <div class="status-row">
+      <button class="btn-online"  onclick="goOnline()">● Go Online</button>
+      <button class="btn-offline" onclick="goOffline()">○ Go Offline</button>
+    </div>
+    <div class="current-status" id="current-status"><span class="dot"></span>Not connected</div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-label">Navigation</div>
+    <a class="nav-item" href="/"><span class="icon">▦</span> Dashboard</a>
+    <a class="nav-item active" href="/agent.html"><span class="icon">🎧</span> Agent Console</a>
+    <a class="nav-item" href="/customer.html"><span class="icon">💬</span> Customer Chat</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="avatar-sm">AG</div>
+    <div>
+      <div class="name" id="agent-name-footer">Not logged in</div>
+      <div class="role">Support Agent</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h1>Agent Console</h1>
+    <div class="topbar-right">
+      <span style="color:var(--muted);font-size:12px">Active chats:</span>
+      <span class="badge-count" id="chat-count">0</span>
+    </div>
+  </div>
+
+  <div class="chat-layout">
+    <!-- Sessions -->
+    <div class="sessions-col">
+      <h2>Incoming Chats</h2>
+      <div class="session-list" id="session-list">
+        <div class="no-sessions">Go online to<br>receive chats</div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="chat-col" id="chat-col">
+      <div class="empty-chat">
+        <div class="icon">🎧</div>
+        <div>Select a chat to start responding</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentAgentId = null, currentAgentName = '', currentSessionId = null;
+  let knownCounts = {}, pollTimer = null;
+
+  async function loadAgents() {
+    const res = await fetch('/agents');
+    const agents = await res.json();
+    const sel = document.getElementById('agent-select');
+    agents.filter(a => a.status === 'active').forEach(a => {
+      const opt = document.createElement('option');
+      opt.value = a.id;
+      opt.textContent = `${a.name} (${a.site})`;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function goOnline() {
+    const sel = document.getElementById('agent-select');
+    if (!sel.value) { alert('Select an agent first'); return; }
+    currentAgentId   = sel.value;
+    currentAgentName = sel.options[sel.selectedIndex].textContent.split(' (')[0];
+
+    await fetch('/webhooks/presence', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ agentId: currentAgentId, state: 'online', timestamp: new Date().toISOString() })
+    });
+
+    const cs = document.getElementById('current-status');
+    cs.className = 'current-status is-online';
+    cs.innerHTML = `<span class="dot"></span>${currentAgentName} — Online`;
+    document.getElementById('agent-name-footer').textContent = currentAgentName;
+
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = setInterval(poll, 1500);
+    poll();
+  }
+
+  async function goOffline() {
+    if (!currentAgentId) return;
+    await fetch('/webhooks/presence', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ agentId: currentAgentId, state: 'offline', timestamp: new Date().toISOString() })
+    });
+    document.getElementById('current-status').className = 'current-status';
+    document.getElementById('current-status').innerHTML = `<span class="dot"></span>${currentAgentName} — Offline`;
+  }
+
+  async function poll() {
+    if (!currentAgentId) return;
+    const res = await fetch(`/chat/agent/${currentAgentId}`);
+    if (!res.ok) return;
+    const sessions = await res.json();
+    renderList(sessions);
+    document.getElementById('chat-count').textContent = sessions.length;
+    if (currentSessionId) {
+      const s = sessions.find(s => s.id === currentSessionId);
+      if (s) renderNewMessages(s);
+    }
+  }
+
+  function renderList(sessions) {
+    const list = document.getElementById('session-list');
+    if (!sessions.length) {
+      list.innerHTML = '<div class="no-sessions">No active chats.<br>Waiting for customers…</div>';
+      return;
+    }
+    list.innerHTML = sessions.map(s => {
+      const unread = s.messages.length - (knownCounts[s.id] || 0);
+      const last = s.messages.length ? s.messages[s.messages.length-1].text : 'Session started';
+      const time = new Date(s.createdAt).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+      return `<div class="session-item ${s.id===currentSessionId?'active':''}" onclick="openSession('${s.id}','${esc(s.customerName)}')">
+        <div class="s-top">
+          <span class="s-name">${escHtml(s.customerName)}</span>
+          <span class="s-time">${time}</span>
+        </div>
+        <div class="s-preview">${escHtml(last.substring(0,45))}${last.length>45?'…':''}</div>
+        ${unread > 0 ? `<span class="unread">${unread}</span>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function openSession(id, name) {
+    currentSessionId = id;
+    const col = document.getElementById('chat-col');
+    col.innerHTML = `
+      <div class="chat-header">
+        <div class="customer-info">
+          <div class="avatar">${name.slice(0,2).toUpperCase()}</div>
+          <div><div class="cname">${escHtml(name)}</div><div class="cmeta">Customer</div></div>
+        </div>
+        <button class="btn-end" onclick="endChat()">End Chat</button>
+      </div>
+      <div class="messages" id="msg-area"></div>
+      <div class="input-area">
+        <textarea id="reply-input" placeholder="Type your reply…" rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendReply()}"
+          oninput="this.style.height='42px';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+        <button class="send-btn" onclick="sendReply()">➤</button>
+      </div>`;
+    knownCounts[id] = 0;
+    poll();
+  }
+
+  function renderNewMessages(session) {
+    const area = document.getElementById('msg-area');
+    if (!area) return;
+    const known = knownCounts[session.id] || 0;
+    if (session.messages.length <= known) return;
+    session.messages.slice(known).forEach(m => {
+      const div = document.createElement('div');
+      div.className = `msg-group ${m.from}`;
+      const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+      div.innerHTML = `<div class="bubble">${escHtml(m.text)}</div><div class="msg-meta">${escHtml(m.senderName)} · ${time}</div>`;
+      area.appendChild(div);
+    });
+    knownCounts[session.id] = session.messages.length;
+    area.scrollTop = 99999;
+  }
+
+  async function sendReply() {
+    const input = document.getElementById('reply-input');
+    const text = input?.value.trim();
+    if (!text || !currentSessionId) return;
+    input.value = ''; input.style.height = '42px';
+    await fetch(`/chat/sessions/${currentSessionId}/messages`, {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ from: 'agent', senderName: currentAgentName, text })
+    });
+    const area = document.getElementById('msg-area');
+    if (area) {
+      const div = document.createElement('div');
+      div.className = 'msg-group agent';
+      div.innerHTML = `<div class="bubble">${escHtml(text)}</div><div class="msg-meta">${escHtml(currentAgentName)} · ${new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</div>`;
+      area.appendChild(div);
+      area.scrollTop = 99999;
+      if (knownCounts[currentSessionId] !== undefined) knownCounts[currentSessionId]++;
+    }
+  }
+
+  async function endChat() {
+    if (!currentSessionId) return;
+    await fetch(`/chat/sessions/${currentSessionId}/close`, { method: 'POST' });
+    currentSessionId = null;
+    document.getElementById('chat-col').innerHTML = '<div class="empty-chat"><div class="icon">🎧</div><div>Select a chat to start responding</div></div>';
+    poll();
+  }
+
+  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function esc(s) { return String(s).replace(/'/g,"\\'"); }
+
+  loadAgents();
+</script>
+</body>
+</html>

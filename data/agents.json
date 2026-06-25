@@ -1,0 +1,66 @@
+[
+  {
+    "id": "agt_101",
+    "name": "Maria Santos",
+    "site": "manila",
+    "shift": "09:00-17:00",
+    "payRate": 4.50,
+    "status": "active"
+  },
+  {
+    "id": "agt_102",
+    "name": "Jose Reyes",
+    "site": "manila",
+    "shift": "17:00-01:00",
+    "payRate": 4.50,
+    "status": "active"
+  },
+  {
+    "id": "agt_103",
+    "name": "Ana Cruz",
+    "site": "cebu",
+    "shift": "08:00-16:00",
+    "payRate": 4.50,
+    "status": "active"
+  },
+  {
+    "id": "agt_104",
+    "name": "Pedro Lim",
+    "site": "cebu",
+    "shift": "16:00-00:00",
+    "payRate": 4.75,
+    "status": "active"
+  },
+  {
+    "id": "agt_105",
+    "name": "Fatima Benali",
+    "site": "morocco",
+    "shift": "08:00-16:00",
+    "payRate": 3.80,
+    "status": "active"
+  },
+  {
+    "id": "agt_106",
+    "name": "Youssef Alami",
+    "site": "morocco",
+    "shift": "12:00-20:00",
+    "payRate": 3.80,
+    "status": "suspended"
+  },
+  {
+    "id": "agt_107",
+    "name": "Haja Rakoto",
+    "site": "madagascar",
+    "shift": "07:00-15:00",
+    "payRate": 3.20,
+    "status": "active"
+  },
+  {
+    "id": "agt_108",
+    "name": "Nirina Rabe",
+    "site": "madagascar",
+    "shift": "15:00-23:00",
+    "payRate": 3.20,
+    "status": "active"
+  }
+]
