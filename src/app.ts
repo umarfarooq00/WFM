@@ -18,7 +18,9 @@ export function createApp() {
   app.use("/scheduler", schedulerRouter);
   app.use("/chat", chatRouter);
 
+  // __dirname is src/ locally and /var/task/src on Vercel
   app.use(express.static(path.join(__dirname, "../public")));
+  app.use(express.static(path.join(process.cwd(), "public")));
 
   app.get("/health", (_req, res) => res.json({ ok: true }));
 
